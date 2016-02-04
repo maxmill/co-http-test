@@ -23,8 +23,8 @@ httpTest('makes one request | ,,too many commas', testApi.endPoint.get('posts/1'
 httpTest('|too many bars| | ,,too many commas', testApi.endPoint.get('posts/1'));
 
 httpTest('parallel HTTP GET | gmaps , jsonplaceholder',[
-    testApi.gmaps.get('maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA')],
-    testApi.endPoint.get('posts/1'));
+    testApi.gmaps.get('maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA'),
+    testApi.endPoint.get('posts/1')]);
 
 httpTest('parallel HTTP | POST, PUT, PATCH', [
     testApi.endPoint.post('posts/'),
