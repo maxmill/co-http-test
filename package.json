@@ -1,6 +1,6 @@
 {
   "name": "co-http-test",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Max Millien",
   "description": "http testing made easy",
   "repository": {
@@ -12,7 +12,7 @@
   "scripts": {
     "clean": "npm cache clean && rm -rf node_modules bin data",
     "build": "babel lib -d bin",
-    "test": "npm run build && tape ./test"
+    "test": "tape ./test"
   },
   "keywords": [
     "koa",
@@ -22,6 +22,9 @@
     "requests",
     "co",
     "test",
+    "tape",
+    "testing",
+    "qa",
     "httpTest",
     "generators",
     "convenience"
@@ -35,8 +38,8 @@
     "babel-preset-es2015-node5": "*",
     "babel-preset-stage-3": "*",
     "co-tape": "*",
-    "tape": "4.x",
-    "tape-catch": "1.x"
+    "tape": "*",
+    "tape-catch": "*"
   },
   "engines": {
     "node": ">= 4.2.0"

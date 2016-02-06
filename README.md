@@ -12,11 +12,9 @@ npm i --save co-http-test
 var httpTest = require('co-http-test');
 
 httpTest(description, request)
+// description   : string
+// request       : co/koa/generator compatible request.js call
 ```
-
-description: string
-
-request:co/koa/generator compatible request.js call
 
 for slightly more verbose output format description:
 
@@ -35,7 +33,7 @@ httpTest('enforce response body | and status', testApi.endPoint.get('posts/1'),
     }
 );
 
-request arrays are executed in parallel
+// request arrays are executed in parallel
 
 
 httpTest('parallel HTTP test detailed description | details for POST, PUT details, PATCH details', [
