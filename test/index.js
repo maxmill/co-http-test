@@ -1,10 +1,8 @@
-const $http = require('rain-util-http');
-
-const httpTest = require('../bin');
-
+const httpTest = require('../bin').httpTest;
+const httpUtil = require('../bin').httpUtil;
 const testApi = {
-    gmaps: new $http('https://maps.googleapis.com/', {'x-hi-there': 'hello'}),
-    endPoint: new $http('http://jsonplaceholder.typicode.com/')
+    gmaps: new httpUtil('https://maps.googleapis.com/', {'x-hi-there': 'hello'}),
+    endPoint: new httpUtil('http://jsonplaceholder.typicode.com/')
 };
 
 httpTest('makes one request with basic description', testApi.endPoint.get('posts/1'));

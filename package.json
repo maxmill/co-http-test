@@ -1,6 +1,6 @@
 {
   "name": "co-http-test",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "Max Millien",
   "description": "http request validations made easy",
   "repository": {

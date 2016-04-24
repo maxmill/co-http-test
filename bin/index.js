@@ -4,6 +4,7 @@ const run = require('tape-catch');
 const coTape = require('co-tape');
 const validateResponse = require('./validate-response');
 const describeResult = require('./describe-result');
+const httpUtil = require('rain-util-http');
 
 /** Validates results of one or more http requests. (optional) validate by status(defaults to 200), body, and headers
  *
@@ -52,4 +53,4 @@ const httpTest = (description, req, expectStatus, expectBody, expectHeaders) => 
 
 const concatWithDefault = (values, size, defaultValue) => values.concat(Array.from(new Array(size)).map(r => r || defaultValue));
 
-module.exports = httpTest;
+module.exports = { httpTest: httpTest, httpUtil: httpUtil };

@@ -9,7 +9,8 @@
 
 ```
 npm i --save co-http-test
-var httpTest = require('co-http-test');
+
+const httpTest = require('co-http-test');
 
 httpTest(description, request)
 // description   : string
@@ -20,10 +21,10 @@ for slightly more verbose output format description:
 
     var str = 'test group description | test1 desc, test2 desc, etc'
 
-### getting started
+### examples
 ```
-const httpTest = require('co-http-test');
-const $http = require('co-http-test/http-util');
+const httpTest = require('co-http-test').httpTest; // ".httpTest" only needed when httpUtil is used
+const httpUtil = require('co-http-test').httpUtil;
 
 const testApi = {
     gmaps: new $http('https://maps.googleapis.com/', {'x-hi-there': 'hello'}),
