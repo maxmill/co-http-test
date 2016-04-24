@@ -1,62 +1,55 @@
 'use strict';
 
-const test = require('tape-catch');
+const run = require('tape-catch');
 const coTape = require('co-tape');
+const validateResponse = require('./validate-response');
+const describeResult = require('./describe-result');
 
-const assertResponse = function assertResponse(response, expectStatus, expectResult) {
+/** Validates results of one or more http requests. (optional) validate by status(defaults to 200), body, and headers
+ *
+ * @param description - string, comma-separated for more verbose output
+ * @param req - co/koa/generator compatible request.js call
+ * @param expectStatus -number
+ * @param expectBody - Json
+ * @param expectHeaders - Json
+ */
+const httpTest = (description, req, expectStatus, expectBody, expectHeaders) => {
 
-    var validStatus = expectStatus && response.statusCode ? expectStatus == response.statusCode : response.statusCode < 400;
-    var validResponse = expectResult && response.body ? JSON.stringify(expectResult) === JSON.stringify(response.body) : response.body !== undefined;
-    var success = validStatus && validResponse;
-    var out = '';
+    expectStatus = Array.isArray(expectStatus) ? expectStatus : [expectStatus];
+    expectBody = Array.isArray(expectBody) ? expectBody : [expectBody];
+    expectHeaders = Array.isArray(expectHeaders) ? expectHeaders : [expectHeaders];
 
-    if (success === true) {
-        out += `PASS (${ response.statusCode })\n\t`;
-    } else {
-        out += `FAIL \n\t`;
-        if (!validStatus) {
-            out += ` - expected status: ${ expectStatus }, got ${ response.statusCode }`;
-        }
-        if (!validResponse) {
-            out += ` - expected result: ${ JSON.stringify(expectResult) }, got ${ JSON.stringify(response.body) }`;
-        }
+    const numStatuses = req.length - expectStatus.length;
+    const numHeaders = req.length - expectHeaders.length;
+    const numResults = req.length - expectBody.length;
+
+
+    if (numResults > -1) {
+        expectBody = concatWithDefault(expectBody, numResults);
     }
-    return {
-        success: success,
-        message: out
-    };
-};
+    if (numStatuses > -1) {
+        expectStatus = concatWithDefault(expectStatus, numStatuses, 200);
+    }
+    if (numHeaders > -1) {
+        expectHeaders = concatWithDefault(expectHeaders, numHeaders);
+    }
 
-const httpTest = (description, req, expectStatus, expectResult) => {
+    run(description, coTape(function* (test) {
+        // starts test
+        const response = yield req;
 
-    test(description, coTape(function* (t) {
-        var response = yield req;
-        expectStatus = Array.isArray(expectStatus) ? expectStatus : [expectStatus];
-        expectResult = Array.isArray(expectResult) ? expectResult : [expectResult];
+        // if multiple responses are found, validate them
+        let testResult = Array.isArray(response) ? response.map((r, i) => validateResponse(r, expectStatus[i], expectBody[i], expectHeaders[i])) : [validateResponse(response, expectStatus[0], expectBody[0], expectHeaders[0])];
 
-        var numResults = req.length - expectResult.length;
-        if (numResults > -1) {
-            expectResult = expectResult.concat(Array.from(new Array(numResults)).map(r => r || undefined));
-        }
-        var numStatuses = req.length - expectStatus.length;
-        if (numStatuses > -1) {
-            expectStatus = expectStatus.concat(Array.from(new Array(numStatuses)).map(r => r || 200));
-        }
+        // assert test results array
+        const passOrFail = testResult.filter(x => x.success === false).length === 0 ? 'pass' : 'fail';
 
-        var testResult = Array.isArray(response) ? response.map((r, i) => assertResponse(r, expectStatus[i], expectResult[i])) : assertResponse(response);
+        test[passOrFail](describeResult(description, testResult));
 
-        testResult = Array.isArray(testResult) ? testResult : [testResult];
-
-        description = description.indexOf('|') > -1 ? description.split('|') : [null, description];
-
-        var _desc = description[1].indexOf(',') > -1 ? description[1].split(',') : Array.from(new Array(testResult.length)).map((x, i) => `${ description[1] }`);
-
-        var messages = `${ description[1] } ${ testResult.map((x, i) => `[${ _desc[i] } - ${ x.message }]`).join(',') }`;
-        var passed = testResult.filter(x => x.success === false).length === 0;
-
-        t[passed === true ? 'pass' : 'fail'](messages);
-        t.end();
+        test.end(); // ends test
     }));
 };
+
+const concatWithDefault = (values, size, defaultValue) => values.concat(Array.from(new Array(size)).map(r => r || defaultValue));
 
 module.exports = httpTest;
